@@ -216,12 +216,14 @@ function App() {
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-200 flex overflow-hidden">
       {/* Sidebar for Desktop */}
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onLogout={handleLogout}
-        user={session.user}
-      />
+      <div className="hidden md:block">
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onLogout={handleLogout}
+          user={session.user}
+        />
+      </div>
 
       {/* Mobile Sidebar Backdrop */}
       {isSidebarOpen && (
