@@ -6,7 +6,8 @@ import {
     CreditCard,
     TrendingUp,
     LogOut,
-    User as UserIcon
+    User as UserIcon,
+    X
 } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab, isMobile, onClose, onLogout, user }) => {
@@ -25,20 +26,27 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, onClose, onLogout, user })
 
     return (
         <div className={`
-      ${isMobile ? 'fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out' : 'sticky top-0 h-screen w-64 hidden md:flex'}
-      bg-slate-900 border-r border-slate-800 flex-col
-      ${isMobile && !onClose ? '-translate-x-full' : 'translate-x-0'}
+      ${isMobile ? 'fixed inset-y-0 left-0 z-[100] w-72 transform transition-transform duration-300 ease-in-out' : 'sticky top-0 h-screen w-64 hidden md:flex'}
+      bg-slate-900 border-r border-slate-800 flex-col shadow-2xl
+      ${isMobile && !onClose ? '-translate-x-full' : (isMobile && onClose ? 'translate-x-0' : '')}
     `}>
-            <div className="p-6 flex items-center gap-3 border-b border-slate-800">
-                <div className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-white shadow-lg shadow-blue-500/10 overflow-hidden bg-white">
-                    <img src="/logo.png" alt="CastePay" className="w-full h-full object-cover scale-110" />
+            <div className="p-6 flex items-center justify-between border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white shadow-lg shadow-blue-500/10 overflow-hidden bg-white">
+                        <img src="/logo.png" alt="CastePay" className="w-full h-full object-cover scale-110" />
+                    </div>
+                    <div>
+                        <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                            CastePay
+                        </h1>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Gestión</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                        CastePay
-                    </h1>
-                    <p className="text-xs text-slate-500">Gestión Personal</p>
-                </div>
+                {isMobile && (
+                    <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-xl text-slate-400 transition-colors">
+                        <X size={20} />
+                    </button>
+                )}
             </div>
 
             <nav className="flex-1 px-4 py-6 space-y-2">
