@@ -232,7 +232,9 @@ function App() {
       )}
 
       {/* Sidebar for Mobile */}
-      <div className={`fixed inset-y-0 left-0 z-[60] transform transition-transform duration-300 ease-in-out md:hidden ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div
+        className={`fixed inset-y-0 left-0 z-[100] w-[280px] transform transition-transform duration-300 ease-in-out md:hidden bg-slate-900 shadow-2xl ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
         <Sidebar
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -247,14 +249,15 @@ function App() {
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Top Navbar for Mobile/Header */}
         <header className="h-16 md:h-20 border-b border-white/5 bg-slate-900/50 backdrop-blur-xl flex items-center justify-between px-6 shrink-0 z-40">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden p-2 hover:bg-slate-800 rounded-lg text-slate-400"
+              className="md:hidden p-2.5 bg-slate-800/80 hover:bg-slate-700 rounded-xl text-slate-200 border border-white/5 active:scale-90 transition-all"
+              aria-label="Abrir menú"
             >
-              <Menu size={24} />
+              <Menu size={22} />
             </button>
-            <h2 className="text-lg font-bold text-white hidden md:block capitalize">
+            <h2 className="text-sm md:text-lg font-bold text-white capitalize truncate max-w-[150px] sm:max-w-none">
               {activeTab === 'dashboard' ? 'Panel General' : activeTab === 'history' ? 'Historial de Movimientos' : 'Cuentas y Pagos'}
             </h2>
           </div>
