@@ -9,13 +9,18 @@ const BillControl = ({ transactions, onUpdate, user }) => {
     const [selectedBill, setSelectedBill] = useState(null);
     const [activeSection, setActiveSection] = useState('egreso'); // 'egreso' or 'ingreso'
 
-    // Filter unpaid/uncollected items
+    // Filter unpaid/uncollected items (now including those without dates)
     const pendingItems = transactions
-        .filter(t => t.tipo === activeSection && t.fecha_vencimiento && !t.pagado)
-        .sort((a, b) => new Date(a.fecha_vencimiento) - new Date(b.fecha_vencimiento));
+        .filter(t => t.tipo === activeSection && !t.pagado && (t.fecha_vencimiento || t.pagado === false))
+        .sort((a, b) => {
+            if (!a.fecha_vencimiento && !b.fecha_vencimiento) return 0;
+            if (!a.fecha_vencimiento) return 1; // Put dateless at the end
+            if (!b.fecha_vencimiento) return -1;
+            return new Date(a.fecha_vencimiento) - new Date(b.fecha_vencimiento);
+        });
 
-    const pendingExpenses = transactions.filter(t => t.tipo === 'egreso' && t.fecha_vencimiento && !t.pagado);
-    const pendingIncomes = transactions.filter(t => t.tipo === 'ingreso' && t.fecha_vencimiento && !t.pagado);
+    const pendingExpenses = transactions.filter(t => t.tipo === 'egreso' && !t.pagado);
+    const pendingIncomes = transactions.filter(t => t.tipo === 'ingreso' && !t.pagado);
 
     const totalDeuda = pendingExpenses.reduce((acc, curr) => acc + curr.monto, 0);
     const totalCobros = pendingIncomes.reduce((acc, curr) => acc + curr.monto, 0);
@@ -52,8 +57,8 @@ const BillControl = ({ transactions, onUpdate, user }) => {
                         <button
                             onClick={() => setActiveSection('egreso')}
                             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all ${activeSection === 'egreso'
-                                    ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                                    : 'text-slate-500 hover:text-slate-300'
+                                ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                                : 'text-slate-500 hover:text-slate-300'
                                 }`}
                         >
                             <TrendingDown size={16} />
@@ -62,8 +67,8 @@ const BillControl = ({ transactions, onUpdate, user }) => {
                         <button
                             onClick={() => setActiveSection('ingreso')}
                             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all ${activeSection === 'ingreso'
-                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                                    : 'text-slate-500 hover:text-slate-300'
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'text-slate-500 hover:text-slate-300'
                                 }`}
                         >
                             <TrendingUp size={16} />
@@ -96,26 +101,26 @@ const BillControl = ({ transactions, onUpdate, user }) => {
                 ) : (
                     <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
                         {pendingItems.map((item) => {
-                            const dueDate = parseISO(item.fecha_vencimiento);
-                            const isUrgent = isBefore(dueDate, addDays(new Date(), 3));
-                            const isOverdue = isBefore(dueDate, new Date());
+                            const dueDate = item.fecha_vencimiento ? parseISO(item.fecha_vencimiento) : null;
+                            const isUrgent = dueDate ? isBefore(dueDate, addDays(new Date(), 3)) : false;
+                            const isOverdue = dueDate ? isBefore(dueDate, new Date()) : false;
 
                             const statusColor = activeSection === 'egreso'
                                 ? (isOverdue ? 'rose' : isUrgent ? 'amber' : 'blue')
-                                : (isOverdue ? 'emerald' : isUrgent ? 'emerald' : 'emerald');
+                                : 'emerald';
 
                             return (
                                 <div
                                     key={item.id}
                                     className={`group p-4 rounded-2xl border relative overflow-hidden transition-all hover:scale-[1.01] ${activeSection === 'egreso'
-                                            ? isOverdue ? 'border-rose-500/30 bg-rose-500/5' : isUrgent ? 'border-amber-500/30 bg-amber-500/5' : 'border-slate-700/50 bg-slate-800/40'
-                                            : 'border-emerald-500/20 bg-emerald-500/5'
+                                        ? isOverdue ? 'border-rose-500/30 bg-rose-500/5' : isUrgent ? 'border-amber-500/30 bg-amber-500/5' : 'border-slate-700/50 bg-slate-800/40'
+                                        : 'border-emerald-500/20 bg-emerald-500/5'
                                         }`}
                                 >
                                     {/* Indicator Stripe */}
                                     <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${activeSection === 'egreso'
-                                            ? isOverdue ? 'bg-rose-500' : isUrgent ? 'bg-amber-500' : 'bg-blue-500'
-                                            : 'bg-emerald-500'
+                                        ? isOverdue ? 'bg-rose-500' : isUrgent ? 'bg-amber-500' : 'bg-blue-500'
+                                        : 'bg-emerald-500'
                                         }`} />
 
                                     <div className="flex justify-between items-start pl-3">
@@ -126,12 +131,18 @@ const BillControl = ({ transactions, onUpdate, user }) => {
                                                     {item.categoria}
                                                 </span>
                                                 <span className={`text-xs font-bold flex items-center gap-1.5 ${activeSection === 'egreso'
-                                                        ? isOverdue ? 'text-rose-400' : isUrgent ? 'text-amber-400' : 'text-slate-400'
-                                                        : 'text-emerald-400'
+                                                    ? isOverdue ? 'text-rose-400' : isUrgent ? 'text-amber-400' : 'text-slate-400'
+                                                    : 'text-emerald-400'
                                                     }`}>
                                                     <Clock size={12} />
-                                                    {isOverdue ? 'Venció el ' : 'Vence el '}
-                                                    {format(dueDate, 'dd MMM', { locale: es })}
+                                                    {item.fecha_vencimiento ? (
+                                                        <>
+                                                            {isOverdue ? 'Venció el ' : 'Vence el '}
+                                                            {format(dueDate, 'dd MMM', { locale: es })}
+                                                        </>
+                                                    ) : (
+                                                        'A cobrar / pagar pronto'
+                                                    )}
                                                 </span>
                                             </div>
                                         </div>
@@ -152,8 +163,8 @@ const BillControl = ({ transactions, onUpdate, user }) => {
                                                 <button
                                                     onClick={() => handleQuickMarkAsDone(item)}
                                                     className={`px-4 py-1.5 rounded-lg text-white text-[11px] font-black uppercase tracking-wider shadow-lg transition-all transform active:scale-95 ${activeSection === 'egreso'
-                                                            ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-900/20'
-                                                            : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/20'
+                                                        ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-900/20'
+                                                        : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/20'
                                                         }`}
                                                 >
                                                     {activeSection === 'egreso' ? 'Pagar' : 'Cobrar'}

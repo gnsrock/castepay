@@ -96,15 +96,19 @@ const TransactionHistory = ({ transactions, onTogglePaid, onDelete, compact = fa
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 text-center">
-                                    {t.fecha_vencimiento ? (
+                                    {!t.pagado ? (
                                         <button
                                             onClick={() => onTogglePaid && onTogglePaid(t.id, t.pagado)}
-                                            className={`text-[10px] font-black px-3 py-1 rounded-lg transition-all border ${t.pagado
-                                                ? 'text-emerald-400 bg-emerald-400/5 border-emerald-400/20 hover:bg-emerald-400/10'
-                                                : 'text-amber-400 bg-amber-400/5 border-amber-400/20 hover:bg-amber-400/10'
-                                                }`}
+                                            className="text-[10px] font-black px-3 py-1 rounded-lg transition-all border text-amber-400 bg-amber-400/5 border-amber-400/20 hover:bg-amber-400/10"
                                         >
-                                            {t.pagado ? 'COMPLETADO' : 'PENDIENTE'}
+                                            PENDIENTE
+                                        </button>
+                                    ) : t.fecha_vencimiento ? (
+                                        <button
+                                            onClick={() => onTogglePaid && onTogglePaid(t.id, t.pagado)}
+                                            className="text-[10px] font-black px-3 py-1 rounded-lg transition-all border text-emerald-400 bg-emerald-400/5 border-emerald-400/20 hover:bg-emerald-400/10"
+                                        >
+                                            COMPLETADO
                                         </button>
                                     ) : (
                                         <span className="text-slate-500 text-[9px] font-black tracking-[0.2em] uppercase">Contado</span>

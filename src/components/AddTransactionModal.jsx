@@ -167,13 +167,13 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
 
                                 {formData.is_pending && (
                                     <div className="pt-2 animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-xs font-medium text-slate-400 mb-1 block">¿Cuándo vence / se cobra?</label>
+                                        <label className="text-xs font-medium text-slate-400 mb-1 block">¿Cuándo vence / se cobra? (Opcional)</label>
                                         <div className="relative">
                                             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
                                             <input
                                                 type="date"
                                                 name="fecha_vencimiento"
-                                                required={formData.is_pending}
+                                                required={false}
                                                 value={formData.fecha_vencimiento}
                                                 onChange={handleChange}
                                                 className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm [color-scheme:dark]"
