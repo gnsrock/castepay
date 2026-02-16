@@ -7,6 +7,7 @@ import AddTransactionModal from './components/AddTransactionModal'
 import Sidebar from './components/Sidebar'
 import FilterBar from './components/FilterBar'
 import Landing from './components/Landing'
+import SuccessSplash from './components/SuccessSplash'
 import { Menu, Plus, X, Loader2 } from 'lucide-react'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard') // dashboard, bills, history
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [splash, setSplash] = useState(null) // { type: 'ingreso' | 'egreso' }
 
   // Filtering state
   const [searchQuery, setSearchQuery] = useState('')
@@ -288,8 +290,18 @@ function App() {
         isOpen={isModalOpen}
         user={session.user}
         onClose={() => setIsModalOpen(false)}
-        onTransactionAdded={handleTransactionAdded}
+        onTransactionAdded={(data) => {
+          handleTransactionAdded(data);
+          setSplash({ type: data.tipo });
+        }}
       />
+
+      {splash && (
+        <SuccessSplash
+          type={splash.type}
+          onComplete={() => setSplash(null)}
+        />
+      )}
     </div>
   )
 }
