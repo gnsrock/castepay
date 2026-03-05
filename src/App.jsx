@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { startOfMonth, subMonths, addMonths, format, isSameMonth, parseISO } from 'date-fns'
 import { supabase } from './supabaseClient'
 import Dashboard from './components/Dashboard'
 import BillControl from './components/BillControl'
@@ -20,6 +21,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [splash, setSplash] = useState(null) // { type: 'ingreso' | 'egreso' }
+  const [selectedMonth, setSelectedMonth] = useState(new Date())
 
   // Filtering state
   const [searchQuery, setSearchQuery] = useState('')
@@ -173,7 +175,12 @@ function App() {
       case 'dashboard':
         return (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <Dashboard transactions={transactions} user={session.user} />
+            <Dashboard
+              transactions={transactions}
+              user={session.user}
+              selectedMonth={selectedMonth}
+              setSelectedMonth={setSelectedMonth}
+            />
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               <BillControl transactions={transactions} onUpdate={fetchTransactions} user={session.user} />
               <div className="glass-card p-6">

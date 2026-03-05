@@ -1,5 +1,6 @@
-import React from 'react';
-import { DollarSign, TrendingUp, TrendingDown, Wallet, Calendar } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Wallet, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, isSameMonth, parseISO, subMonths, addMonths } from 'date-fns';
+import { es } from 'date-fns/locale';
 import ExpenseChart from './ExpenseChart';
 
 const SummaryCard = ({ title, amount, icon: Icon, colorClass, gradient, percentage }) => (
@@ -27,22 +28,29 @@ const SummaryCard = ({ title, amount, icon: Icon, colorClass, gradient, percenta
     </div>
 );
 
-const Dashboard = ({ transactions, user }) => {
+const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
     // Current Summary: Real money (where pagado is true)
+    // - balance: cumulative (all transactions)
+    // - income/expenses: filtered by selected month
     const summary = transactions.reduce(
         (acc, curr) => {
+            const transactionDate = parseISO(curr.created_at);
+            const isInSelectedMonth = isSameMonth(transactionDate, selectedMonth);
+
             if (curr.pagado) {
                 if (curr.tipo === 'ingreso') {
-                    acc.income += curr.monto;
                     acc.balance += curr.monto;
+                    if (isInSelectedMonth) acc.income += curr.monto;
                 } else {
-                    acc.expenses += curr.monto;
                     acc.balance -= curr.monto;
+                    if (isInSelectedMonth) acc.expenses += curr.monto;
                 }
             } else {
-                // Keep track of pending for future display
-                if (curr.tipo === 'ingreso') acc.pendingIncome += curr.monto;
-                else acc.pendingExpenses += curr.monto;
+                // Keep track of pending for current month for future display
+                if (isInSelectedMonth) {
+                    if (curr.tipo === 'ingreso') acc.pendingIncome += curr.monto;
+                    else acc.pendingExpenses += curr.monto;
+                }
             }
             return acc;
         },
@@ -53,20 +61,45 @@ const Dashboard = ({ transactions, user }) => {
 
     return (
         <div className="space-y-10">
-            {/* Welcome User Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Welcome User & Month Selection Section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h1 className="text-3xl font-bold text-white tracking-tight">
                         ¡Hola, {userName}! 👋
                     </h1>
-                    <p className="text-slate-400 mt-1">Aquí tienes un resumen de tus finanzas reales hoy.</p>
+                    <p className="text-slate-400 mt-1">Así van tus finanzas en {format(selectedMonth, 'MMMM yyyy', { locale: es })}.</p>
                 </div>
+
+                {/* Month Navigation */}
+                <div className="flex items-center bg-slate-800/40 p-1.5 rounded-2xl border border-white/5">
+                    <button
+                        onClick={() => setSelectedMonth(subMonths(selectedMonth, 1))}
+                        className="p-2 hover:bg-slate-700/50 rounded-xl text-slate-400 hover:text-white transition-all transition-all active:scale-90"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+
+                    <div className="px-4 text-center min-w-[140px]">
+                        <p className="text-[10px] uppercase tracking-widest font-black text-blue-400 mb-0.5">Seleccionar Mes</p>
+                        <p className="text-sm font-bold text-white capitalize">
+                            {format(selectedMonth, 'MMMM yyyy', { locale: es })}
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={() => setSelectedMonth(addMonths(selectedMonth, 1))}
+                        className="p-2 hover:bg-slate-700/50 rounded-xl text-slate-400 hover:text-white transition-all active:scale-90"
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
+
                 <div className="flex items-center gap-6">
                     {(summary.pendingIncome > 0 || summary.pendingExpenses > 0) && (
                         <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-slate-800/40 rounded-xl border border-white/5 animate-pulse">
                             <Calendar className="text-blue-400" size={18} />
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-slate-500 font-black uppercase">Próximos Movimientos</span>
+                                <span className="text-[10px] text-slate-500 font-black uppercase">Pendiente {format(selectedMonth, 'MMMM', { locale: es })}</span>
                                 <div className="flex gap-3 text-xs font-bold">
                                     {summary.pendingIncome > 0 && <span className="text-emerald-400">+$ {summary.pendingIncome.toLocaleString()}</span>}
                                     {summary.pendingExpenses > 0 && <span className="text-rose-400">-$ {summary.pendingExpenses.toLocaleString()}</span>}
@@ -79,8 +112,8 @@ const Dashboard = ({ transactions, user }) => {
                             <Wallet size={20} />
                         </div>
                         <div className="pr-4">
-                            <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Estado de Cuenta</p>
-                            <p className="text-sm font-bold text-white">Sincronizado</p>
+                            <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Ahorro Total</p>
+                            <p className="text-sm font-bold text-white">${summary.balance.toLocaleString('es-AR')}</p>
                         </div>
                     </div>
                 </div>
@@ -96,14 +129,14 @@ const Dashboard = ({ transactions, user }) => {
                     gradient="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
-                    title="Ingresos Cobrados"
+                    title={`Ingresos ${format(selectedMonth, 'MMMM', { locale: es })}`}
                     amount={summary.income}
                     icon={TrendingUp}
                     colorClass="text-emerald-400"
                     gradient="from-emerald-500 to-teal-600"
                 />
                 <SummaryCard
-                    title="Gastos Pagados"
+                    title={`Gastos ${format(selectedMonth, 'MMMM', { locale: es })}`}
                     amount={summary.expenses}
                     icon={TrendingDown}
                     colorClass="text-rose-400"
@@ -118,13 +151,13 @@ const Dashboard = ({ transactions, user }) => {
                         <div>
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                 <TrendingUp className="text-blue-400" size={20} />
-                                Distribución de Gastos Efectuados
+                                Distribución de Gastos ({format(selectedMonth, 'MMMM', { locale: es })})
                             </h2>
-                            <p className="text-sm text-slate-400 mt-1">Análisis por categorías de consumo real.</p>
+                            <p className="text-sm text-slate-400 mt-1">Análisis por categorías este mes.</p>
                         </div>
                     </div>
                     <div className="h-[300px] w-full">
-                        <ExpenseChart transactions={transactions.filter(t => t.pagado)} />
+                        <ExpenseChart transactions={transactions.filter(t => t.pagado && isSameMonth(parseISO(t.created_at), selectedMonth))} />
                     </div>
                 </div>
             </div>
