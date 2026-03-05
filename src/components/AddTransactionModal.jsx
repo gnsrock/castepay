@@ -21,17 +21,18 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
         const { name, value } = e.target;
 
         if (name === 'monto') {
-            // Remove any non-numeric characters for the raw numeric value
-            const numericValue = value.replace(/[^0-9.]/g, '');
+            // 1. Get only digits. We'll handle decimals as the last 2 digits if the user wants, 
+            // but for simplicity and Pesos, let's just use automatic thousands formatting for integers.
+            // If the user types a comma or dot, we treat it as a decimal separator.
 
-            // Format for display (Argentine/Spanish style with dots for thousands)
-            const parts = numericValue.split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            const formatted = parts.join(',');
+            let rawValue = value.replace(/[^0-9]/g, ''); // Strict digits only for now
+
+            // Format for display (Argentine style: dots for thousands)
+            const formatted = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
             setFormData(prev => ({
                 ...prev,
-                monto: numericValue,
+                monto: rawValue,
                 displayMonto: value === '' ? '' : formatted
             }));
         } else {
@@ -151,11 +152,12 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                     <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
                                     <input
                                         type="text"
+                                        inputMode="decimal"
                                         name="monto"
                                         required
                                         value={formData.displayMonto}
                                         onChange={handleChange}
-                                        placeholder="0,00"
+                                        placeholder="0"
                                         className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-bold text-lg"
                                     />
                                 </div>
