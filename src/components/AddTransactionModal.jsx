@@ -7,7 +7,8 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         nombre: '',
-        monto: '',
+        monto: '', // Numeric string for internal logic
+        displayMonto: '', // Formatted string for UI
         tipo: 'egreso', // 'ingreso' or 'egreso'
         categoria: 'Varios',
         fecha_vencimiento: '',
@@ -18,7 +19,24 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+
+        if (name === 'monto') {
+            // Remove any non-numeric characters for the raw numeric value
+            const numericValue = value.replace(/[^0-9.]/g, '');
+
+            // Format for display (Argentine/Spanish style with dots for thousands)
+            const parts = numericValue.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            const formatted = parts.join(',');
+
+            setFormData(prev => ({
+                ...prev,
+                monto: numericValue,
+                displayMonto: value === '' ? '' : formatted
+            }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -52,6 +70,7 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
             setFormData({
                 nombre: '',
                 monto: '',
+                displayMonto: '',
                 tipo: 'egreso',
                 categoria: 'Varios',
                 fecha_vencimiento: '',
@@ -131,14 +150,12 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                 <div className="relative">
                                     <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
                                     <input
-                                        type="number"
+                                        type="text"
                                         name="monto"
                                         required
-                                        min="0"
-                                        step="0.01"
-                                        value={formData.monto}
+                                        value={formData.displayMonto}
                                         onChange={handleChange}
-                                        placeholder="0.00"
+                                        placeholder="0,00"
                                         className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-bold text-lg"
                                     />
                                 </div>

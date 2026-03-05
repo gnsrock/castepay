@@ -45,16 +45,36 @@ const TrendChart = ({ transactions }) => {
                     <YAxis hide />
                     <Tooltip
                         cursor={{ fill: 'rgba(255,255,255,0.05)', radius: 8 }}
-                        contentStyle={{
-                            backgroundColor: '#0f172a',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderRadius: '16px',
-                            boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.5)',
-                            padding: '12px',
-                            border: '1px solid rgba(255,255,255,0.1)'
+                        content={({ active, payload, label }) => {
+                            if (active && payload && payload.length) {
+                                return (
+                                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-md">
+                                        <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-2">{label}</p>
+                                        <div className="space-y-1.5">
+                                            <div className="flex items-center justify-between gap-8">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                                    <span className="text-xs text-slate-300">Ingresos</span>
+                                                </div>
+                                                <span className="text-sm font-bold text-emerald-400">
+                                                    ${payload[0].value.toLocaleString('es-AR')}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between gap-8">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-rose-500" />
+                                                    <span className="text-xs text-slate-300">Gastos</span>
+                                                </div>
+                                                <span className="text-sm font-bold text-rose-400">
+                                                    ${payload[1].value.toLocaleString('es-AR')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            }
+                            return null;
                         }}
-                        itemStyle={{ fontSize: '13px', fontWeight: 'bold' }}
-                        formatter={(value) => [`$${value.toLocaleString('es-AR')}`]}
                     />
                     <Legend
                         verticalAlign="top"

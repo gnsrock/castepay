@@ -64,15 +64,24 @@ const ExpenseChart = ({ transactions }) => {
                         ))}
                     </Pie>
                     <Tooltip
-                        formatter={(value) => [`$${value.toLocaleString('es-AR')}`, 'Gasto']}
-                        contentStyle={{
-                            backgroundColor: '#0f172a',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderRadius: '16px',
-                            boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.5)',
-                            padding: '12px'
+                        content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                                const { name, value } = payload[0].payload;
+                                return (
+                                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-md">
+                                        <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-1">Categoría</p>
+                                        <p className="text-sm font-bold text-white mb-2">{name}</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-rose-500" />
+                                            <p className="text-lg font-black text-white italic">
+                                                ${value.toLocaleString('es-AR')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                );
+                            }
+                            return null;
                         }}
-                        itemStyle={{ color: '#F8FAFC', fontWeight: 'bold', fontSize: '13px' }}
                     />
                 </PieChart>
             </ResponsiveContainer>
