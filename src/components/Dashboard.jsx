@@ -1,7 +1,7 @@
 import { DollarSign, TrendingUp, TrendingDown, Wallet, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, isSameMonth, parseISO, subMonths, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-import ExpenseChart from './ExpenseChart';
+import DistributionChart from './DistributionChart';
 import TrendChart from './TrendChart';
 
 const SummaryCard = ({ title, amount, icon: Icon, colorClass, gradient, percentage }) => (
@@ -145,9 +145,28 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                 />
             </div>
 
-            {/* Visualizations Section */}
+            {/* Visualizations Section - Distribution Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Donut Chart */}
+                {/* Income Distribution Chart */}
+                <div className="glass-card p-8 relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <TrendingUp className="text-emerald-400" size={20} />
+                                Distribución de Ingresos ({format(selectedMonth, 'MMMM', { locale: es })})
+                            </h2>
+                            <p className="text-sm text-slate-400 mt-1">Origen de tus ingresos este mes.</p>
+                        </div>
+                    </div>
+                    <div className="h-[300px] w-full">
+                        <DistributionChart
+                            type="ingreso"
+                            transactions={transactions.filter(t => t.pagado && isSameMonth(parseISO(t.created_at), selectedMonth))}
+                        />
+                    </div>
+                </div>
+
+                {/* Expense Distribution Chart (Donut) */}
                 <div className="glass-card p-8 relative overflow-hidden">
                     <div className="flex items-center justify-between mb-8">
                         <div>
@@ -159,24 +178,27 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                         </div>
                     </div>
                     <div className="h-[300px] w-full">
-                        <ExpenseChart transactions={transactions.filter(t => t.pagado && isSameMonth(parseISO(t.created_at), selectedMonth))} />
+                        <DistributionChart
+                            type="egreso"
+                            transactions={transactions.filter(t => t.pagado && isSameMonth(parseISO(t.created_at), selectedMonth))}
+                        />
                     </div>
                 </div>
+            </div>
 
-                {/* Trend Chart */}
-                <div className="glass-card p-8 relative overflow-hidden">
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <TrendingUp className="text-emerald-400" size={20} />
-                                Balance Histórico (6 Meses)
-                            </h2>
-                            <p className="text-sm text-slate-400 mt-1">Tendencia de Ingresos vs Gastos.</p>
-                        </div>
+            {/* Historical Trend Section - Full Width Row */}
+            <div className="glass-card p-8 relative overflow-hidden">
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                            <TrendingUp className="text-blue-400" size={20} />
+                            Análisis de Tendencia Histórica (6 Meses)
+                        </h2>
+                        <p className="text-sm text-slate-400 mt-1">Comparativa de Ingresos vs Gastos para evaluar tu ahorro.</p>
                     </div>
-                    <div className="h-[300px] w-full">
-                        <TrendChart transactions={transactions} />
-                    </div>
+                </div>
+                <div className="h-[350px] w-full">
+                    <TrendChart transactions={transactions} />
                 </div>
             </div>
         </div>

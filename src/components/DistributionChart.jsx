@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
-const COLORS = ['#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#6366F1'];
+const INCOME_COLORS = ['#10B981', '#059669', '#34D399', '#064E3B', '#10B981', '#6EE7B7'];
+const EXPENSE_COLORS = ['#F43F5E', '#E11D48', '#FB7185', '#9F1239', '#F43F5E', '#FDA4AF'];
 
-const ExpenseChart = ({ transactions }) => {
+const DistributionChart = ({ transactions, type = 'egreso' }) => {
     const { data, total } = useMemo(() => {
-        // Filter only expenses (egreso)
-        const expenses = transactions.filter(t => t.tipo === 'egreso' && t.monto > 0);
+        // Filter transactions by type and ensure monto > 0
+        const filtered = transactions.filter(t => t.tipo === type && t.monto > 0);
 
         // Group by category
-        const categoryTotals = expenses.reduce((acc, curr) => {
+        const categoryTotals = filtered.reduce((acc, curr) => {
             const cat = curr.categoria || 'Varios';
             acc[cat] = (acc[cat] || 0) + curr.monto;
             return acc;
@@ -23,12 +24,16 @@ const ExpenseChart = ({ transactions }) => {
         const totalSum = chartData.reduce((acc, curr) => acc + curr.value, 0);
 
         return { data: chartData, total: totalSum };
-    }, [transactions]);
+    }, [transactions, type]);
+
+    const colors = type === 'ingreso' ? INCOME_COLORS : EXPENSE_COLORS;
+    const accentColor = type === 'ingreso' ? 'text-emerald-400' : 'text-rose-400';
+    const labelText = type === 'ingreso' ? 'Total Cobrado' : 'Total Gastado';
 
     if (data.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-64 border border-dashed border-slate-700 rounded-3xl bg-slate-800/20">
-                <p className="text-slate-500 font-medium">Sin gastos este mes</p>
+                <p className="text-slate-500 font-medium">Sin datos para mostrar</p>
             </div>
         );
     }
@@ -37,8 +42,8 @@ const ExpenseChart = ({ transactions }) => {
         <div className="w-full h-80 relative flex items-center justify-center">
             {/* Central Total Overlay */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mb-8">
-                <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Gastado</span>
-                <span className="text-2xl font-black text-white italic">
+                <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest">{labelText}</span>
+                <span className={`text-2xl font-black italic ${accentColor}`}>
                     ${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                 </span>
             </div>
@@ -58,7 +63,7 @@ const ExpenseChart = ({ transactions }) => {
                         {data.map((entry, index) => (
                             <Cell
                                 key={`cell-${index}`}
-                                fill={COLORS[index % COLORS.length]}
+                                fill={colors[index % colors.length]}
                                 className="hover:opacity-80 transition-opacity cursor-pointer focus:outline-none"
                             />
                         ))}
@@ -72,7 +77,7 @@ const ExpenseChart = ({ transactions }) => {
                                         <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-1">Categoría</p>
                                         <p className="text-sm font-bold text-white mb-2">{name}</p>
                                         <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-rose-500" />
+                                            <div className={`w-2 h-2 rounded-full ${type === 'ingreso' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
                                             <p className="text-lg font-black text-white italic">
                                                 ${value.toLocaleString('es-AR')}
                                             </p>
@@ -89,4 +94,4 @@ const ExpenseChart = ({ transactions }) => {
     );
 };
 
-export default ExpenseChart;
+export default DistributionChart;
