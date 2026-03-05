@@ -5,11 +5,11 @@ import ExpenseChart from './ExpenseChart';
 import TrendChart from './TrendChart';
 
 const SummaryCard = ({ title, amount, icon: Icon, colorClass, gradient, percentage }) => (
-    <div className={`relative overflow-hidden p-6 rounded-2xl border border-white/5 bg-slate-800/50 backdrop-blur-sm group transition-all hover:scale-[1.02]`}>
+    <div className={`relative overflow-hidden p-6 rounded-2xl border border-white/5 bg-slate-800/50 backdrop-blur-sm group transition-all hover:scale-[1.02] flex flex-col items-center text-center md:items-start md:text-left`}>
         <div className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-10 bg-gradient-to-br ${gradient}`} />
 
-        <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
+        <div className="relative z-10 w-full flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex items-center justify-between mb-4 w-full">
                 <div className={`p-3 rounded-xl bg-slate-900/50 border border-white/5 ${colorClass}`}>
                     <Icon size={20} />
                 </div>
@@ -63,8 +63,8 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
     return (
         <div className="space-y-10">
             {/* Welcome User & Month Selection Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 items-center text-center md:text-left">
+                <div className="flex flex-col items-center md:items-start">
                     <h1 className="text-3xl font-bold text-white tracking-tight">
                         ¡Hola, {userName}! 👋
                     </h1>
@@ -95,7 +95,7 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                     </button>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex flex-col items-center md:flex-row gap-6 w-full md:w-auto">
                     {(summary.pendingIncome > 0 || summary.pendingExpenses > 0) && (
                         <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-slate-800/40 rounded-xl border border-white/5 animate-pulse">
                             <Calendar className="text-blue-400" size={18} />
@@ -108,11 +108,11 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                             </div>
                         </div>
                     )}
-                    <div className="flex items-center gap-3 bg-slate-800/40 p-1.5 rounded-2xl border border-white/5">
+                    <div className="flex items-center gap-3 bg-slate-800/40 p-1.5 rounded-2xl border border-white/5 w-full md:w-auto justify-center md:justify-start">
                         <div className="bg-emerald-500/20 text-emerald-400 p-2 rounded-xl">
                             <Wallet size={20} />
                         </div>
-                        <div className="pr-4">
+                        <div className="pr-4 text-left">
                             <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Ahorro Total</p>
                             <p className="text-sm font-bold text-white">${summary.balance.toLocaleString('es-AR')}</p>
                         </div>
