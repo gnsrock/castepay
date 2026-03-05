@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { format, isBefore, addDays, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { CheckCircle, AlertCircle, Clock, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { getCategoryIcon } from '../config/categories';
 import PartialPaymentModal from './PartialPaymentModal';
 import { supabase } from '../supabaseClient';
 
@@ -127,9 +128,10 @@ const BillControl = ({ transactions, onUpdate, user }) => {
                                         <div className="flex flex-col gap-1">
                                             <h4 className="font-bold text-slate-100 text-lg leading-tight">{item.nombre}</h4>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-900/80 px-2 py-0.5 rounded text-slate-500 border border-white/5">
-                                                    {item.categoria}
-                                                </span>
+                                                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-md border border-white/5">
+                                                    {React.createElement(getCategoryIcon(item.categoria, item.tipo), { size: 10, className: "text-slate-500" })}
+                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{item.categoria}</span>
+                                                </div>
                                                 <span className={`text-xs font-bold flex items-center gap-1.5 ${activeSection === 'egreso'
                                                     ? isOverdue ? 'text-rose-400' : isUrgent ? 'text-amber-400' : 'text-slate-400'
                                                     : 'text-emerald-400'

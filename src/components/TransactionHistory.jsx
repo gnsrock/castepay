@@ -1,7 +1,8 @@
 import React from 'react';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Trash2, ArrowUpRight, ArrowDownLeft, Calendar as CalendarIcon, Tag, History, SearchX, Plus } from 'lucide-react';
+import { Trash2, ArrowUpRight, ArrowDownLeft, Calendar as CalendarIcon, History, SearchX, Plus, Tag } from 'lucide-react';
+import { getCategoryIcon } from '../config/categories';
 
 const TransactionHistory = ({ transactions, onTogglePaid, onDelete, compact = false }) => {
     // Sort logic
@@ -29,7 +30,10 @@ const TransactionHistory = ({ transactions, onTogglePaid, onDelete, compact = fa
                             </div>
                             <div>
                                 <h4 className="text-sm font-bold text-slate-200 line-clamp-1">{t.nombre}</h4>
-                                <p className="text-xs text-slate-500 capitalize">{t.categoria}</p>
+                                <div className="flex items-center gap-1.5">
+                                    {React.createElement(getCategoryIcon(t.categoria, t.tipo), { size: 10, className: "text-slate-500" })}
+                                    <p className="text-xs text-slate-500 capitalize">{t.categoria}</p>
+                                </div>
                             </div>
                         </div>
                         <div className="text-right">
@@ -91,7 +95,7 @@ const TransactionHistory = ({ transactions, onTogglePaid, onDelete, compact = fa
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                     <div className="inline-flex items-center gap-2 bg-slate-900/50 border border-slate-700/50 text-slate-400 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">
-                                        <Tag size={10} />
+                                        {React.createElement(getCategoryIcon(t.categoria, t.tipo), { size: 10 })}
                                         {t.categoria}
                                     </div>
                                 </td>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Plus, Calendar, DollarSign, Tag, Type, CheckCircle2, Circle } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+import { CATEGORIES } from '../config/categories';
 
 const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
     const [loading, setLoading] = useState(false);
@@ -151,8 +152,8 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                         type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, is_pending: !prev.is_pending }))}
                                         className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all w-full ${formData.is_pending
-                                                ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-                                                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                                            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                                             }`}
                                     >
                                         {formData.is_pending ? <Circle size={18} /> : <CheckCircle2 size={18} />}
@@ -194,26 +195,9 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                         onChange={handleChange}
                                         className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer font-medium"
                                     >
-                                        <option value="Varios">Varios</option>
-                                        {formData.tipo === 'ingreso' ? (
-                                            <>
-                                                <option value="Sueldo">Sueldo</option>
-                                                <option value="Alquiler">Alquiler (Ingreso)</option>
-                                                <option value="Venta">Venta</option>
-                                                <option value="Intereses">Intereses / Inversión</option>
-                                                <option value="Regalo">Regalo / Otros</option>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <option value="Comida">Comida</option>
-                                                <option value="Transporte">Transporte</option>
-                                                <option value="Servicios">Servicios (Luz, Gas, etc)</option>
-                                                <option value="Ocio">Ocio / Salidas</option>
-                                                <option value="Salud">Salud</option>
-                                                <option value="Hogar">Hogar</option>
-                                                <option value="Educación">Educación</option>
-                                            </>
-                                        )}
+                                        {CATEGORIES[formData.tipo].map(cat => (
+                                            <option key={cat.name} value={cat.name}>{cat.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
