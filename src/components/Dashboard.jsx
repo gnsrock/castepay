@@ -2,6 +2,7 @@ import { DollarSign, TrendingUp, TrendingDown, Wallet, Calendar, ChevronLeft, Ch
 import { format, isSameMonth, parseISO, subMonths, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import ExpenseChart from './ExpenseChart';
+import TrendChart from './TrendChart';
 
 const SummaryCard = ({ title, amount, icon: Icon, colorClass, gradient, percentage }) => (
     <div className={`relative overflow-hidden p-6 rounded-2xl border border-white/5 bg-slate-800/50 backdrop-blur-sm group transition-all hover:scale-[1.02]`}>
@@ -145,12 +146,13 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
             </div>
 
             {/* Visualizations Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Donut Chart */}
                 <div className="glass-card p-8 relative overflow-hidden">
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <TrendingUp className="text-blue-400" size={20} />
+                                <TrendingDown className="text-rose-400" size={20} />
                                 Distribución de Gastos ({format(selectedMonth, 'MMMM', { locale: es })})
                             </h2>
                             <p className="text-sm text-slate-400 mt-1">Análisis por categorías este mes.</p>
@@ -158,6 +160,22 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                     </div>
                     <div className="h-[300px] w-full">
                         <ExpenseChart transactions={transactions.filter(t => t.pagado && isSameMonth(parseISO(t.created_at), selectedMonth))} />
+                    </div>
+                </div>
+
+                {/* Trend Chart */}
+                <div className="glass-card p-8 relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <TrendingUp className="text-emerald-400" size={20} />
+                                Balance Histórico (6 Meses)
+                            </h2>
+                            <p className="text-sm text-slate-400 mt-1">Tendencia de Ingresos vs Gastos.</p>
+                        </div>
+                    </div>
+                    <div className="h-[300px] w-full">
+                        <TrendChart transactions={transactions} />
                     </div>
                 </div>
             </div>
