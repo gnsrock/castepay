@@ -104,11 +104,11 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
                     <form onSubmit={handleSubmit} className="p-6 space-y-5">
                         {/* Type Selection */}
-                        <div className="grid grid-cols-2 gap-4 p-1 bg-slate-800/50 rounded-xl">
+                        <div className="grid grid-cols-3 gap-2 p-1 bg-slate-800/50 rounded-xl">
                             <button
                                 type="button"
-                                onClick={() => setFormData({ ...formData, tipo: 'ingreso' })}
-                                className={`py-2 px-4 rounded-lg text-sm font-bold transition-all ${formData.tipo === 'ingreso'
+                                onClick={() => setFormData({ ...formData, tipo: 'ingreso', categoria: CATEGORIES.ingreso[0].name })}
+                                className={`py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all ${formData.tipo === 'ingreso'
                                     ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
                                     : 'text-slate-400 hover:text-white'
                                     }`}
@@ -117,13 +117,23 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setFormData({ ...formData, tipo: 'egreso' })}
-                                className={`py-2 px-4 rounded-lg text-sm font-bold transition-all ${formData.tipo === 'egreso'
+                                onClick={() => setFormData({ ...formData, tipo: 'egreso', categoria: CATEGORIES.egreso[0].name })}
+                                className={`py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all ${formData.tipo === 'egreso'
                                     ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20'
                                     : 'text-slate-400 hover:text-white'
                                     }`}
                             >
-                                Gasto / Cuenta
+                                Gasto
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, tipo: 'inversion', categoria: CATEGORIES.inversion[0].name })}
+                                className={`py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all ${formData.tipo === 'inversion'
+                                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
+                                    : 'text-slate-400 hover:text-white'
+                                    }`}
+                            >
+                                Inversión
                             </button>
                         </div>
 
@@ -139,7 +149,11 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                         required
                                         value={formData.nombre}
                                         onChange={handleChange}
-                                        placeholder={formData.tipo === 'ingreso' ? 'Ej: Sueldo, Venta, Alquiler...' : 'Ej: Luz, Super, Internet...'}
+                                        placeholder={
+                                            formData.tipo === 'ingreso' ? 'Ej: Sueldo, Venta, Alquiler...' :
+                                                formData.tipo === 'egreso' ? 'Ej: Luz, Super, Internet...' :
+                                                    'Ej: Apple Inc, Bitcoin, Bono AR29...'
+                                        }
                                         className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                                     />
                                 </div>
@@ -179,7 +193,9 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                         <span className="font-bold text-sm">
                                             {formData.tipo === 'ingreso'
                                                 ? (formData.is_pending ? 'Pendiente de Cobro' : 'Cobrado')
-                                                : (formData.is_pending ? 'Pendiente de Pago' : 'Pagado ya')
+                                                : formData.tipo === 'egreso'
+                                                    ? (formData.is_pending ? 'Pendiente de Pago' : 'Pagado ya')
+                                                    : (formData.is_pending ? 'Inversión Programada' : 'Inversión realizada')
                                             }
                                         </span>
                                     </button>
@@ -234,7 +250,9 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`flex-1 py-3 px-4 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${formData.tipo === 'ingreso' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-500/20' : 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-500/20'
+                                className={`flex-1 py-3 px-4 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${formData.tipo === 'ingreso' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-500/20' :
+                                        formData.tipo === 'egreso' ? 'bg-gradient-to-r from-rose-600 to-red-600 shadow-rose-500/20' :
+                                            'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-500/20'
                                     }`}
                             >
                                 {loading ? (

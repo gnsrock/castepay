@@ -25,9 +25,10 @@ const SuccessSplash = ({ type, onComplete }) => {
     }, [onComplete]);
 
     const isIncome = type === 'ingreso';
-    const color = isIncome ? '#10b981' : '#f43f5e';
-    const Icon = isIncome ? TrendingUp : TrendingDown;
-    const label = isIncome ? 'INGRESO REGISTRADO' : 'GASTO REGISTRADO';
+    const isInvestment = type === 'inversion';
+    const color = isIncome ? '#10b981' : isInvestment ? '#3b82f6' : '#f43f5e';
+    const Icon = isInvestment ? CheckCircle2 : (isIncome ? TrendingUp : TrendingDown);
+    const label = isInvestment ? 'INVERSIÓN REGISTRADA' : (isIncome ? 'INGRESO REGISTRADO' : 'GASTO REGISTRADO');
 
     return (
         <div className="fixed inset-0 pointer-events-none z-[9999] flex items-center justify-center">

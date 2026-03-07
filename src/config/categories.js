@@ -12,7 +12,12 @@ import {
     ShoppingBag,
     Gift,
     Sparkles,
-    Tag
+    Tag,
+    TrendingUp,
+    Building2,
+    Landmark,
+    PieChart,
+    Bitcoin
 } from 'lucide-react';
 
 export const CATEGORIES = {
@@ -33,6 +38,14 @@ export const CATEGORIES = {
         { name: 'Salud', icon: Stethoscope },
         { name: 'Hogar', icon: Home },
         { name: 'Educación', icon: GraduationCap },
+        { name: 'Varios', icon: Tag },
+    ],
+    inversion: [
+        { name: 'CEDEARs', icon: TrendingUp },
+        { name: 'Acciones', icon: Building2 },
+        { name: 'Bonos', icon: Landmark },
+        { name: 'Fondos Comunes', icon: PieChart },
+        { name: 'Criptomonedas', icon: Bitcoin },
         { name: 'Varios', icon: Tag },
     ]
 };

@@ -14,6 +14,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, onClose, onLogout, user })
         { id: 'dashboard', label: 'Panel General', icon: LayoutDashboard },
         { id: 'history', label: 'Movimientos', icon: History },
         { id: 'bills', label: 'Cuentas y Deudas', icon: CreditCard },
+        { id: 'investments', label: 'Inversiones', icon: TrendingUp },
     ];
 
     const handleNav = (id) => {

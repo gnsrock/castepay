@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar'
 import FilterBar from './components/FilterBar'
 import Landing from './components/Landing'
 import SuccessSplash from './components/SuccessSplash'
+import Investments from './components/Investments'
 import { Menu, Plus, X, Loader2 } from 'lucide-react'
 
 function App() {
@@ -217,6 +218,16 @@ function App() {
             <BillControl transactions={transactions} onUpdate={fetchTransactions} user={session.user} />
           </div>
         );
+      case 'investments':
+        return (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <Investments
+              transactions={transactions}
+              onTogglePaid={togglePaymentStatus}
+              onDelete={handleDeleteTransaction}
+            />
+          </div>
+        );
       default:
         return null;
     }
@@ -269,7 +280,7 @@ function App() {
               <Menu size={22} />
             </button>
             <h2 className="text-sm md:text-lg font-bold text-white capitalize truncate max-w-[150px] sm:max-w-none">
-              {activeTab === 'dashboard' ? 'Panel General' : activeTab === 'history' ? 'Historial de Movimientos' : 'Cuentas y Pagos'}
+              {activeTab === 'dashboard' ? 'Panel General' : activeTab === 'history' ? 'Historial de Movimientos' : activeTab === 'bills' ? 'Cuentas y Pagos' : 'Mis Inversiones'}
             </h2>
           </div>
 

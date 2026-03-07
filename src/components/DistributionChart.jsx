@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 const INCOME_COLORS = ['#10B981', '#059669', '#34D399', '#064E3B', '#10B981', '#6EE7B7'];
 const EXPENSE_COLORS = ['#F43F5E', '#E11D48', '#FB7185', '#9F1239', '#F43F5E', '#FDA4AF'];
+const INVESTMENT_COLORS = ['#3B82F6', '#2563EB', '#60A5FA', '#1E40AF', '#3B82F6', '#93C5FD'];
 
 const DistributionChart = ({ transactions, type = 'egreso' }) => {
     const { data, total } = useMemo(() => {
@@ -26,9 +27,9 @@ const DistributionChart = ({ transactions, type = 'egreso' }) => {
         return { data: chartData, total: totalSum };
     }, [transactions, type]);
 
-    const colors = type === 'ingreso' ? INCOME_COLORS : EXPENSE_COLORS;
-    const accentColor = type === 'ingreso' ? 'text-emerald-400' : 'text-rose-400';
-    const labelText = type === 'ingreso' ? 'Total Cobrado' : 'Total Gastado';
+    const colors = type === 'ingreso' ? INCOME_COLORS : type === 'inversion' ? INVESTMENT_COLORS : EXPENSE_COLORS;
+    const accentColor = type === 'ingreso' ? 'text-emerald-400' : type === 'inversion' ? 'text-blue-400' : 'text-rose-400';
+    const labelText = type === 'ingreso' ? 'Total Cobrado' : type === 'inversion' ? 'Total Invertido' : 'Total Gastado';
 
     if (data.length === 0) {
         return (
@@ -77,7 +78,10 @@ const DistributionChart = ({ transactions, type = 'egreso' }) => {
                                         <p className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-1">Categoría</p>
                                         <p className="text-sm font-bold text-white mb-2">{name}</p>
                                         <div className="flex items-center gap-2">
-                                            <div className={`w-2 h-2 rounded-full ${type === 'ingreso' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                                            <div className={`w-2 h-2 rounded-full ${type === 'ingreso' ? 'bg-emerald-500' :
+                                                    type === 'inversion' ? 'bg-blue-500' :
+                                                        'bg-rose-500'
+                                                }`} />
                                             <p className="text-lg font-black text-white italic">
                                                 ${value.toLocaleString('es-AR')}
                                             </p>

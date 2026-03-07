@@ -40,22 +40,28 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
 
             if (curr.pagado) {
                 if (curr.tipo === 'ingreso') {
-                    acc.balance += curr.monto;
+                    acc.liquidity += curr.monto;
+                    acc.netWorth += curr.monto;
                     if (isInSelectedMonth) acc.income += curr.monto;
-                } else {
-                    acc.balance -= curr.monto;
+                } else if (curr.tipo === 'egreso') {
+                    acc.liquidity -= curr.monto;
+                    acc.netWorth -= curr.monto;
                     if (isInSelectedMonth) acc.expenses += curr.monto;
+                } else if (curr.tipo === 'inversion') {
+                    acc.liquidity -= curr.monto;
+                    acc.invested += curr.monto;
+                    acc.netWorth += 0; // Asset movement doesn't change net worth
+                    if (isInSelectedMonth) acc.investments += curr.monto;
                 }
             } else {
-                // Keep track of pending for current month for future display
                 if (isInSelectedMonth) {
                     if (curr.tipo === 'ingreso') acc.pendingIncome += curr.monto;
-                    else acc.pendingExpenses += curr.monto;
+                    else if (curr.tipo === 'egreso') acc.pendingExpenses += curr.monto;
                 }
             }
             return acc;
         },
-        { income: 0, expenses: 0, balance: 0, pendingIncome: 0, pendingExpenses: 0 }
+        { income: 0, expenses: 0, investments: 0, liquidity: 0, invested: 0, netWorth: 0, pendingIncome: 0, pendingExpenses: 0 }
     );
 
     const userName = user?.is_anonymous ? "Invitado" : (user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Usuario");
@@ -113,28 +119,28 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                             <Wallet size={20} />
                         </div>
                         <div className="pr-4 text-left">
-                            <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Ahorro Total</p>
-                            <p className="text-sm font-bold text-white">${summary.balance.toLocaleString('es-AR')}</p>
+                            <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Patrimonio Total</p>
+                            <p className="text-sm font-bold text-white">${summary.netWorth.toLocaleString('es-AR')}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Summary Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <SummaryCard
-                    title="Balance Real"
-                    amount={summary.balance}
+                    title="Liquidez Hoy"
+                    amount={summary.liquidity}
                     icon={DollarSign}
-                    colorClass="text-blue-400"
-                    gradient="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
-                    title={`Ingresos ${format(selectedMonth, 'MMMM', { locale: es })}`}
-                    amount={summary.income}
-                    icon={TrendingUp}
                     colorClass="text-emerald-400"
                     gradient="from-emerald-500 to-teal-600"
+                />
+                <SummaryCard
+                    title="Cap. Invertido"
+                    amount={summary.invested}
+                    icon={TrendingUp}
+                    colorClass="text-blue-400"
+                    gradient="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                     title={`Gastos ${format(selectedMonth, 'MMMM', { locale: es })}`}
@@ -142,6 +148,13 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                     icon={TrendingDown}
                     colorClass="text-rose-400"
                     gradient="from-rose-500 to-pink-600"
+                />
+                <SummaryCard
+                    title="Patrimonio Neto"
+                    amount={summary.netWorth}
+                    icon={Wallet}
+                    colorClass="text-slate-200"
+                    gradient="from-slate-700 to-slate-900"
                 />
             </div>
 
