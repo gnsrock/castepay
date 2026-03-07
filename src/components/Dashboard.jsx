@@ -5,7 +5,7 @@ import DistributionChart from './DistributionChart';
 import TrendChart from './TrendChart';
 
 const SummaryCard = ({ title, amount, icon: Icon, colorClass, gradient, percentage }) => (
-    <div className={`relative overflow-hidden p-6 rounded-2xl border border-white/5 bg-slate-800/50 backdrop-blur-sm group transition-all hover:scale-[1.02] flex flex-col items-center text-center md:items-start md:text-left`}>
+    <div className={`relative overflow-hidden p-6 rounded-2xl border border-white/5 bg-slate-800/50 backdrop-blur-sm group transition-all hover:scale-[1.02] flex flex-col items-center text-center md:items-start md:text-left shrink-0 w-[280px] sm:w-[320px] md:w-auto snap-center md:snap-align-none`}>
         <div className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-10 bg-gradient-to-br ${gradient}`} />
 
         <div className="relative z-10 w-full flex flex-col items-center md:items-start text-center md:text-left">
@@ -21,8 +21,8 @@ const SummaryCard = ({ title, amount, icon: Icon, colorClass, gradient, percenta
                 )}
             </div>
 
-            <p className="text-slate-400 text-sm font-medium mb-1">{title}</p>
-            <h3 className="text-3xl font-bold text-white tracking-tight">
+            <p className="text-slate-400 text-[10px] md:text-sm font-medium mb-1 uppercase tracking-wider md:tracking-normal">{title}</p>
+            <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight break-all">
                 ${amount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
             </h3>
         </div>
@@ -126,8 +126,8 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                 </div>
             </div>
 
-            {/* Summary Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {/* Summary Grid / Mobile Carousel */}
+            <div className="flex overflow-x-auto snap-x snap-mandatory pb-4 gap-6 -mx-4 px-4 md:grid md:grid-cols-4 md:overflow-visible md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
                 <SummaryCard
                     title="Liquidez Hoy"
                     amount={summary.liquidity}
@@ -153,7 +153,7 @@ const Dashboard = ({ transactions, user, selectedMonth, setSelectedMonth }) => {
                     title="Patrimonio Neto"
                     amount={summary.netWorth}
                     icon={Wallet}
-                    colorClass="text-slate-200"
+                    colorClass="text-white"
                     gradient="from-slate-700 to-slate-900"
                 />
             </div>
