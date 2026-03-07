@@ -152,7 +152,7 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                         placeholder={
                                             formData.tipo === 'ingreso' ? 'Ej: Sueldo, Venta, Alquiler...' :
                                                 formData.tipo === 'egreso' ? 'Ej: Luz, Super, Internet...' :
-                                                    'Ej: Apple Inc, Bitcoin, Bono AR29...'
+                                                    'Ej: Dólares, Apple Inc, Bitcoin...'
                                         }
                                         className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                                     />
@@ -251,8 +251,8 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                 type="submit"
                                 disabled={loading}
                                 className={`flex-1 py-3 px-4 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${formData.tipo === 'ingreso' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-500/20' :
-                                        formData.tipo === 'egreso' ? 'bg-gradient-to-r from-rose-600 to-red-600 shadow-rose-500/20' :
-                                            'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-500/20'
+                                    formData.tipo === 'egreso' ? 'bg-gradient-to-r from-rose-600 to-red-600 shadow-rose-500/20' :
+                                        'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-500/20'
                                     }`}
                             >
                                 {loading ? (

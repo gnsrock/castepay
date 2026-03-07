@@ -17,7 +17,8 @@ import {
     Building2,
     Landmark,
     PieChart,
-    Bitcoin
+    Bitcoin,
+    Coins
 } from 'lucide-react';
 
 export const CATEGORIES = {
@@ -44,6 +45,7 @@ export const CATEGORIES = {
         { name: 'CEDEARs', icon: TrendingUp },
         { name: 'Acciones', icon: Building2 },
         { name: 'Bonos', icon: Landmark },
+        { name: 'Divisas', icon: Coins },
         { name: 'Fondos Comunes', icon: PieChart },
         { name: 'Criptomonedas', icon: Bitcoin },
         { name: 'Varios', icon: Tag },
