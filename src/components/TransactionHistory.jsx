@@ -36,11 +36,20 @@ const TransactionHistory = ({ transactions, onTogglePaid, onDelete, compact = fa
                                 </div>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <p className={`text-sm font-bold ${t.tipo === 'ingreso' ? 'text-emerald-400' : 'text-slate-200'}`}>
-                                {t.tipo === 'ingreso' ? '+' : '-'}${t.monto.toLocaleString('es-AR')}
-                            </p>
-                            <p className="text-[10px] text-slate-500">{format(parseISO(t.created_at), 'dd MMM', { locale: es })}</p>
+                        <div className="flex items-center gap-3">
+                            <div className="text-right">
+                                <p className={`text-sm font-bold ${t.tipo === 'ingreso' ? 'text-emerald-400' : 'text-slate-200'}`}>
+                                    {t.tipo === 'ingreso' ? '+' : '-'}${t.monto.toLocaleString('es-AR')}
+                                </p>
+                                <p className="text-[10px] text-slate-500">{format(parseISO(t.created_at), 'dd MMM', { locale: es })}</p>
+                            </div>
+                            <button
+                                onClick={() => onDelete && onDelete(t.id)}
+                                className="p-2 text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                title="Eliminar registro"
+                            >
+                                <Trash2 size={16} />
+                            </button>
                         </div>
                     </div>
                 ))}
