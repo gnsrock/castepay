@@ -18,12 +18,19 @@ import {
     Landmark,
     PieChart,
     Bitcoin,
-    Coins
+    Coins,
+    ArrowLeftRight,
+    FileText,
+    RotateCcw
 } from 'lucide-react';
 
 export const CATEGORIES = {
     ingreso: [
         { name: 'Sueldo', icon: Briefcase },
+        { name: 'Transferencias', icon: ArrowLeftRight },
+        { name: 'Honorarios', icon: FileText },
+        { name: 'Préstamos', icon: Landmark },
+        { name: 'Devoluciones', icon: RotateCcw },
         { name: 'Alquiler', icon: Key },
         { name: 'Venta', icon: ShoppingBag },
         { name: 'Intereses', icon: Wallet },
