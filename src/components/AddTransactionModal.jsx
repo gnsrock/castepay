@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Plus, Calendar, DollarSign, Tag, Type, CheckCircle2, Circle } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { CATEGORIES } from '../config/categories';
 
-const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
+const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user, initialData }) => {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         nombre: '',
@@ -14,6 +14,35 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
         fecha_vencimiento: '',
         is_pending: false
     });
+
+    useEffect(() => {
+        if (isOpen) {
+            if (initialData) {
+                const rawMonto = initialData.monto.toString();
+                const formattedMonto = rawMonto.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+                setFormData({
+                    nombre: initialData.nombre,
+                    monto: rawMonto,
+                    displayMonto: formattedMonto,
+                    tipo: initialData.tipo,
+                    categoria: initialData.categoria,
+                    fecha_vencimiento: initialData.fecha_vencimiento || '',
+                    is_pending: !initialData.pagado
+                });
+            } else {
+                setFormData({
+                    nombre: '',
+                    monto: '',
+                    displayMonto: '',
+                    tipo: 'egreso',
+                    categoria: 'Varios',
+                    fecha_vencimiento: '',
+                    is_pending: false
+                });
+            }
+        }
+    }, [isOpen, initialData]);
 
     if (!isOpen) return null;
 
@@ -47,25 +76,40 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
         try {
             const isPaidStatus = !formData.is_pending;
 
-            const newTransaction = {
+            const transactionData = {
                 nombre: formData.nombre,
                 monto: parseFloat(formData.monto),
                 tipo: formData.tipo,
                 categoria: formData.categoria,
-                created_at: new Date().toISOString(),
                 pagado: isPaidStatus,
-                user_id: user.id,
                 fecha_vencimiento: formData.fecha_vencimiento || null
             };
 
-            const { data, error } = await supabase
-                .from('finanzas')
-                .insert([newTransaction])
-                .select();
+            let returnedData;
 
-            if (error) throw error;
+            if (initialData) {
+                const { data, error } = await supabase
+                    .from('finanzas')
+                    .update(transactionData)
+                    .eq('id', initialData.id)
+                    .select();
 
-            if (onTransactionAdded) onTransactionAdded(data[0]);
+                if (error) throw error;
+                returnedData = data[0];
+            } else {
+                transactionData.created_at = new Date().toISOString();
+                transactionData.user_id = user.id;
+
+                const { data, error } = await supabase
+                    .from('finanzas')
+                    .insert([transactionData])
+                    .select();
+
+                if (error) throw error;
+                returnedData = data[0];
+            }
+
+            if (onTransactionAdded) onTransactionAdded(returnedData, !!initialData);
             onClose();
 
             setFormData({
@@ -91,7 +135,7 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
             <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header - Fixed at top */}
                 <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-slate-800/50 shrink-0">
-                    <h3 className="text-xl font-bold text-white">Nuevo Registro</h3>
+                    <h3 className="text-xl font-bold text-white">{initialData ? 'Editar Registro' : 'Nuevo Registro'}</h3>
                     <button
                         onClick={onClose}
                         className="text-slate-400 hover:text-white transition-colors p-1 hover:bg-slate-700 rounded-lg"
@@ -260,7 +304,7 @@ const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded, user }) => {
                                 ) : (
                                     <>
                                         <Plus size={20} />
-                                        {formData.is_pending ? 'Programar' : 'Registrar'}
+                                        {initialData ? 'Actualizar' : formData.is_pending ? 'Programar' : 'Registrar'}
                                     </>
                                 )}
                             </button>

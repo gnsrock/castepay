@@ -20,6 +20,7 @@ function App() {
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState('dashboard') // dashboard, bills, history
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingTransaction, setEditingTransaction] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [splash, setSplash] = useState(null) // { type: 'ingreso' | 'egreso' }
   const [selectedMonth, setSelectedMonth] = useState(new Date())
@@ -183,7 +184,13 @@ function App() {
               setSelectedMonth={setSelectedMonth}
             />
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              <BillControl transactions={transactions} onUpdate={fetchTransactions} user={session.user} />
+              <BillControl
+                transactions={transactions}
+                onUpdate={fetchTransactions}
+                user={session.user}
+                onDelete={handleDeleteTransaction}
+                onEdit={(t) => { setEditingTransaction(t); setIsModalOpen(true); }}
+              />
               <div className="glass-card p-6">
                 <h2 className="text-xl font-bold text-white mb-4">Últimos Movimientos</h2>
                 <TransactionHistory
@@ -215,7 +222,13 @@ function App() {
       case 'bills':
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-4xl mx-auto">
-            <BillControl transactions={transactions} onUpdate={fetchTransactions} user={session.user} />
+            <BillControl
+              transactions={transactions}
+              onUpdate={fetchTransactions}
+              user={session.user}
+              onDelete={handleDeleteTransaction}
+              onEdit={(t) => { setEditingTransaction(t); setIsModalOpen(true); }}
+            />
           </div>
         );
       case 'investments':
@@ -286,7 +299,7 @@ function App() {
 
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => { setEditingTransaction(null); setIsModalOpen(true); }}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95"
             >
               <Plus size={18} />
@@ -307,10 +320,15 @@ function App() {
       <AddTransactionModal
         isOpen={isModalOpen}
         user={session.user}
+        initialData={editingTransaction}
         onClose={() => setIsModalOpen(false)}
-        onTransactionAdded={(data) => {
-          handleTransactionAdded(data);
-          setSplash({ type: data.tipo });
+        onTransactionAdded={(data, isEdit) => {
+          if (isEdit) {
+            fetchTransactions();
+          } else {
+            handleTransactionAdded(data);
+            setSplash({ type: data.tipo });
+          }
         }}
       />
 

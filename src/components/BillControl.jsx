@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { format, isBefore, addDays, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { CheckCircle, Clock, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, TrendingDown, Calendar, Edit2, Trash2 } from 'lucide-react';
 import { getCategoryIcon } from '../config/categories';
 import PartialPaymentModal from './PartialPaymentModal';
 import { supabase } from '../supabaseClient';
 
-const BillControl = ({ transactions, onUpdate, user }) => {
+const BillControl = ({ transactions, onUpdate, user, onEdit, onDelete }) => {
     const [selectedBill, setSelectedBill] = useState(null);
     const [activeSection, setActiveSection] = useState('egreso'); // 'egreso' or 'ingreso'
 
@@ -148,7 +148,23 @@ const BillControl = ({ transactions, onUpdate, user }) => {
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="text-right flex flex-col items-end gap-2">
+                                        <div className="text-right flex flex-col items-end gap-1">
+                                            <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity mb-1 -mr-2">
+                                                <button
+                                                    onClick={() => onEdit && onEdit(item)}
+                                                    className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors"
+                                                    title="Editar registro"
+                                                >
+                                                    <Edit2 size={14} />
+                                                </button>
+                                                <button
+                                                    onClick={() => onDelete && onDelete(item.id)}
+                                                    className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-400/10 rounded-lg transition-colors"
+                                                    title="Eliminar registro"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
                                             <p className="text-xl font-black tracking-tight text-white italic">
                                                 ${item.monto.toLocaleString('es-AR')}
                                             </p>
